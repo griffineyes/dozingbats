@@ -3,60 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Where's the Bat?</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Where's the Bat? Cartoon Night Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
-        .font-comic { font-family: 'Comic Neue', cursive; }
-        @keyframes zoomIn {
-            from { transform: scale(0.1); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .animate-zoom-in { animation: zoomIn 0.8s ease-out; }
-        body { margin: 0; overflow: hidden; }
+        
+        body {
+            font-family: 'Comic Neue', cursive;
+            overflow: hidden;
+        }
+        
+        .game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .night-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #312e81, #581c87, #312e81);
+        }
+        
+        .star {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #fef08a;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+        
+        .big-star {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: ping 4s infinite;
+        }
+        
+        .firefly {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #fde047;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: bounce 3s infinite;
+        }
+        
+        .start-screen, .game-screen, .result-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        
+        .game-screen {
+            cursor: none;
+            z-index: 5;
+        }
+        
+        .start-box, .result-box {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            border: 4px solid #fde047;
+            text-align: center;
+        }
+        
+        .title {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #fde047;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-size: 1.25rem;
+            color: #bfdbfe;
+            margin-bottom: 2rem;
+        }
+        
+        .button {
+            padding: 1rem 2.5rem;
+            background: linear-gradient(to right, #7c3aed, #2563eb);
+            color: white;
+            border: 2px solid #fde047;
+            border-radius: 2rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-family: 'Comic Neue', cursive;
+        }
+        
+        .button:hover {
+            transform: scale(1.05);
+        }
+        
+        .result-button {
+            background: linear-gradient(to right, #10b981, #2563eb);
+        }
+        
+        .flashlight-area {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .illuminated-scene {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #60a5fa, #93c5fd, #86efac);
+        }
+        
+        .flashlight-indicator {
+            position: absolute;
+            width: 128px;
+            height: 128px;
+            border: 4px solid #facc15;
+            border-radius: 50%;
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(255,255,0,0.1) 0%, transparent 70%);
+            box-shadow: 0 0 30px rgba(255, 255, 0, 0.4);
+        }
+        
+        .moon {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            width: 480px;
+            height: 480px;
+        }
+        
+        .bat-container {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            transition: all 0.5s ease-in-out;
+        }
+        
+        .bat-revealed {
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
+        }
+        
+        .result-text {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #fde047;
+            margin-bottom: 1rem;
+        }
+        
+        .moon-phase-text {
+            font-size: 1.125rem;
+            color: #bfdbfe;
+            margin-bottom: 1rem;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .zoom-in {
+            animation: zoomIn 0.8s ease-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        @keyframes ping {
+            0% { transform: scale(1); opacity: 1; }
+            75%, 100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.1);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
-    <div id="game-container" class="w-full h-screen relative overflow-hidden cursor-none">
-        <!-- Night Sky Background -->
-        <div class="absolute inset-0 bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-800"></div>
-        
-        <!-- Stars -->
-        <div id="stars"></div>
-        
-        <!-- Moon -->
-        <div id="moon" class="absolute top-8 right-8"></div>
+    <div class="game-container" id="gameContainer">
+        <!-- Night Background -->
+        <div class="night-background" id="nightBackground"></div>
         
         <!-- Start Screen -->
-        <div id="start-screen" class="flex flex-col items-center justify-center h-full relative z-10">
-            <div class="text-center bg-black bg-opacity-50 p-8 rounded-3xl border-4 border-yellow-300">
-                <h1 class="text-5xl font-bold text-yellow-300 mb-4 font-comic">🦇 Where's the Bat? 🦇</h1>
-                <p class="text-xl text-blue-200 mb-8 font-comic">Find the hidden bat in the moonlit night!</p>
-                <button onclick="startGame()" class="px-10 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full text-2xl font-bold hover:scale-105 transition-transform shadow-lg border-2 border-yellow-300 font-comic">
-                    🔦 Start Hunt
-                </button>
+        <div class="start-screen" id="startScreen">
+            <div class="start-box">
+                <h1 class="title">🦇 Where's the Bat? 🦇</h1>
+                <p class="subtitle">Find the hidden bat in the moonlit night!</p>
+                <button class="button" onclick="startGame()">🔦 Start Hunt</button>
             </div>
         </div>
         
         <!-- Game Screen -->
-        <div id="game-screen" class="hidden relative w-full h-full">
-            <div id="flashlight-area" class="absolute inset-0"></div>
-            <div id="bat-container" class="absolute"></div>
-            <div id="flashlight-circle" class="absolute w-32 h-32 rounded-full border-4 border-yellow-400 pointer-events-none"></div>
+        <div class="game-screen hidden" id="gameScreen">
+            <div class="moon" id="moon"></div>
+            <div class="flashlight-area" id="flashlightArea">
+                <div class="illuminated-scene" id="illuminatedScene">
+                    <!-- Trees will be added here -->
+                    <svg class="trees" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 16rem;" viewBox="0 0 1000 200" preserveAspectRatio="none">
+                        <rect x="50" y="120" width="20" height="80" fill="#8B4513" />
+                        <ellipse cx="60" cy="110" rx="40" ry="35" fill="#228B22" />
+                        <ellipse cx="60" cy="95" rx="35" ry="30" fill="#32CD32" />
+                        <ellipse cx="60" cy="85" rx="25" ry="25" fill="#7CFC00" />
+                        
+                        <rect x="200" y="100" width="25" height="100" fill="#8B4513" />
+                        <ellipse cx="212" cy="90" rx="50" ry="40" fill="#228B22" />
+                        <ellipse cx="212" cy="70" rx="40" ry="35" fill="#32CD32" />
+                        <ellipse cx="212" cy="55" rx="30" ry="30" fill="#7CFC00" />
+                        
+                        <rect x="800" y="110" width="22" height="90" fill="#8B4513" />
+                        <ellipse cx="811" cy="100" rx="45" ry="38" fill="#228B22" />
+                        <ellipse cx="811" cy="80" rx="38" ry="32" fill="#32CD32" />
+                        <ellipse cx="811" cy="68" rx="28" ry="28" fill="#7CFC00" />
+                        
+                        <rect x="950" y="125" width="18" height="75" fill="#8B4513" />
+                        <ellipse cx="959" cy="115" rx="35" ry="32" fill="#228B22" />
+                        <ellipse cx="959" cy="100" rx="30" ry="28" fill="#32CD32" />
+                        <ellipse cx="959" cy="90" rx="22" ry="22" fill="#7CFC00" />
+                        
+                        <rect x="0" y="180" width="1000" height="20" fill="#32CD32" />
+                    </svg>
+                    <div class="bat-container" id="batContainer"></div>
+                </div>
+            </div>
+            <div class="flashlight-indicator" id="flashlightIndicator"></div>
         </div>
         
-        <!-- Victory Screen -->
-        <div id="victory-screen" class="hidden flex flex-col items-center justify-center h-full relative z-10">
-            <div class="text-center bg-black bg-opacity-70 p-8 rounded-3xl border-4 border-yellow-300">
-                <div id="victory-bat" class="animate-zoom-in mb-6"></div>
-                <div class="mb-4">
-                    <div id="victory-text" class="text-4xl font-bold text-yellow-300 mb-2 font-comic"></div>
-                    <div id="moon-text" class="text-lg text-blue-200 font-comic"></div>
-                </div>
-                <button onclick="resetGame()" class="px-8 py-4 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-full text-xl font-bold hover:scale-105 transition-transform shadow-lg border-2 border-yellow-300 font-comic">
-                    🌙 Hunt Again?
-                </button>
+        <!-- Result Screen -->
+        <div class="result-screen hidden" id="resultScreen">
+            <div class="result-box">
+                <div class="zoom-in" id="resultBat"></div>
+                <div class="result-text" id="resultText"></div>
+                <div class="moon-phase-text" id="moonPhaseText"></div>
+                <button class="button result-button" onclick="resetGame()">🌙 Hunt Again?</button>
             </div>
         </div>
     </div>
@@ -71,148 +287,156 @@
             moonPhase: 0
         };
 
-        const moonPhaseNames = ["New Moon", "Waxing Crescent", "First Quarter", "Waxing Gibbous", 
-                               "Full Moon", "Waning Gibbous", "Last Quarter", "Waning Crescent"];
-
-        const victoryMessages = ["💤 SLEEPY BAT! 💤", "🦇 FLYING HIGH! 🦇", "👁️ WIDE AWAKE! 👁️", "🧛 SPOOKY BAT! 🧛"];
-
-        function createStars() {
-            const starsContainer = document.getElementById('stars');
-            starsContainer.innerHTML = '';
+        // Initialize background elements
+        function initBackground() {
+            const background = document.getElementById('nightBackground');
             
-            // Small twinkling stars
+            // Add stars
             for (let i = 0; i < 50; i++) {
                 const star = document.createElement('div');
-                star.className = 'absolute w-1 h-1 bg-yellow-200 rounded-full animate-pulse';
+                star.className = 'star';
                 star.style.left = Math.random() * 100 + '%';
                 star.style.top = Math.random() * 70 + '%';
                 star.style.animationDelay = Math.random() * 3 + 's';
                 star.style.animationDuration = (2 + Math.random() * 2) + 's';
-                starsContainer.appendChild(star);
+                background.appendChild(star);
             }
             
-            // Larger stars
+            // Add big twinkling stars
             for (let i = 0; i < 15; i++) {
-                const starWrapper = document.createElement('div');
-                starWrapper.className = 'absolute animate-ping';
-                starWrapper.style.left = Math.random() * 100 + '%';
-                starWrapper.style.top = Math.random() * 60 + '%';
-                starWrapper.style.animationDelay = Math.random() * 4 + 's';
-                starWrapper.style.animationDuration = (3 + Math.random() * 2) + 's';
-                
-                const star = document.createElement('div');
-                star.className = 'w-2 h-2 bg-white rounded-full opacity-80';
-                starWrapper.appendChild(star);
-                starsContainer.appendChild(starWrapper);
+                const bigStar = document.createElement('div');
+                bigStar.className = 'big-star';
+                bigStar.style.left = Math.random() * 100 + '%';
+                bigStar.style.top = Math.random() * 60 + '%';
+                bigStar.style.animationDelay = Math.random() * 4 + 's';
+                bigStar.style.animationDuration = (3 + Math.random() * 2) + 's';
+                background.appendChild(bigStar);
+            }
+            
+            // Add fireflies
+            for (let i = 0; i < 8; i++) {
+                const firefly = document.createElement('div');
+                firefly.className = 'firefly';
+                firefly.style.left = (20 + Math.random() * 60) + '%';
+                firefly.style.top = (60 + Math.random() * 30) + '%';
+                firefly.style.animationDelay = Math.random() * 2 + 's';
+                firefly.style.animationDuration = (2 + Math.random() * 3) + 's';
+                background.appendChild(firefly);
             }
         }
 
-        function createMoon(phase) {
-            const moonContainer = document.getElementById('moon');
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('width', '80');
-            svg.setAttribute('height', '80');
-            svg.setAttribute('viewBox', '0 0 100 100');
+        // Moon phases
+        function createMoonPhase(phase) {
+            const moonPhases = [
+                // New Moon
+                '<circle cx="50" cy="50" r="20" fill="#1a1a2e" stroke="#4a4a6a" stroke-width="2" />',
+                // Waxing Crescent
+                '<circle cx="50" cy="50" r="20" fill="#1a1a2e" stroke="#4a4a6a" stroke-width="2" /><path d="M 50 30 A 20 20 0 0 1 50 70 A 15 15 0 0 0 50 30" fill="#f5f5dc" />',
+                // First Quarter
+                '<circle cx="50" cy="50" r="20" fill="#1a1a2e" stroke="#4a4a6a" stroke-width="2" /><path d="M 50 30 A 20 20 0 0 1 50 70 Z" fill="#f5f5dc" />',
+                // Waxing Gibbous
+                '<circle cx="50" cy="50" r="20" fill="#1a1a2e" stroke="#4a4a6a" stroke-width="2" /><path d="M 50 30 A 20 20 0 0 1 50 70 A 8 8 0 0 1 50 30" fill="#f5f5dc" />',
+                // Full Moon
+                '<circle cx="50" cy="50" r="20" fill="#f5f5dc" stroke="#e6e68a" stroke-width="2" />',
+                // Waning Gibbous
+                '<circle cx="50" cy="50" r="20" fill="#f5f5dc" stroke="#e6e68a" stroke-width="2" /><path d="M 50 30 A 8 8 0 0 1 50 70 A 20 20 0 0 0 50 30" fill="#1a1a2e" />',
+                // Last Quarter
+                '<circle cx="50" cy="50" r="20" fill="#f5f5dc" stroke="#e6e68a" stroke-width="2" /><path d="M 50 30 A 20 20 0 0 0 50 70 Z" fill="#1a1a2e" />',
+                // Waning Crescent
+                '<circle cx="50" cy="50" r="20" fill="#f5f5dc" stroke="#e6e68a" stroke-width="2" /><path d="M 50 30 A 15 15 0 0 1 50 70 A 20 20 0 0 0 50 30" fill="#1a1a2e" />'
+            ];
             
-            if (phase === 0) { // New Moon
-                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', '50');
-                circle.setAttribute('cy', '50');
-                circle.setAttribute('r', '20');
-                circle.setAttribute('fill', '#1a1a2e');
-                circle.setAttribute('stroke', '#4a4a6a');
-                circle.setAttribute('stroke-width', '2');
-                svg.appendChild(circle);
-            } else if (phase === 4) { // Full Moon
-                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', '50');
-                circle.setAttribute('cy', '50');
-                circle.setAttribute('r', '20');
-                circle.setAttribute('fill', '#f5f5dc');
-                circle.setAttribute('stroke', '#e6e68a');
-                circle.setAttribute('stroke-width', '2');
-                svg.appendChild(circle);
-                
-                // Add craters
-                const crater1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                crater1.setAttribute('cx', '45');
-                crater1.setAttribute('cy', '45');
-                crater1.setAttribute('r', '3');
-                crater1.setAttribute('fill', '#e6e68a');
-                crater1.setAttribute('opacity', '0.7');
-                svg.appendChild(crater1);
-            } else {
-                // Simplified other phases
-                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', '50');
-                circle.setAttribute('cy', '50');
-                circle.setAttribute('r', '20');
-                circle.setAttribute('fill', phase > 4 ? '#f5f5dc' : '#1a1a2e');
-                circle.setAttribute('stroke', phase > 4 ? '#e6e68a' : '#4a4a6a');
-                circle.setAttribute('stroke-width', '2');
-                svg.appendChild(circle);
+            let moonSvg = `<svg width="480" height="480" viewBox="0 0 100 100">${moonPhases[phase]}`;
+            
+            // Add craters for full phases
+            if (phase === 4 || phase === 5 || phase === 6) {
+                moonSvg += '<circle cx="45" cy="45" r="3" fill="#e6e68a" opacity="0.7" />';
+                moonSvg += '<circle cx="58" cy="52" r="2" fill="#e6e68a" opacity="0.7" />';
+                moonSvg += '<circle cx="52" cy="60" r="2.5" fill="#e6e68a" opacity="0.7" />';
             }
             
-            moonContainer.innerHTML = '';
-            moonContainer.appendChild(svg);
+            moonSvg += '</svg>';
+            return moonSvg;
         }
 
-        function createBat(pose, isRevealed = false) {
+        // Bat SVGs
+        function createBatSVG(isRevealed, pose) {
             const size = isRevealed ? 200 : 80;
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('width', size);
-            svg.setAttribute('height', size);
-            svg.setAttribute('viewBox', '0 0 100 100');
+            const poses = [
+                // Sleeping Bat (pose 0)
+                `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
+                    <rect x="20" y="15" width="60" height="6" fill="#4a3728" rx="3" />
+                    <ellipse cx="35" cy="15" rx="3" ry="2" fill="#5d4537" />
+                    <ellipse cx="65" cy="15" rx="3" ry="2" fill="#5d4537" />
+                    <ellipse cx="35" cy="18" rx="2" ry="4" fill="#333" />
+                    <ellipse cx="65" cy="18" rx="2" ry="4" fill="#333" />
+                    <ellipse cx="50" cy="55" rx="18" ry="25" fill="#4a4a4a" stroke="#333" stroke-width="2" />
+                    <circle cx="50" cy="75" r="12" fill="#666" stroke="#333" stroke-width="2" />
+                    <ellipse cx="44" cy="68" rx="4" ry="8" fill="#555" stroke="#333" stroke-width="1" />
+                    <ellipse cx="56" cy="68" rx="4" ry="8" fill="#555" stroke="#333" stroke-width="1" />
+                    ${!isRevealed ? 
+                        '<path d="M 45 74 C 47 74 47 74 47 74" stroke="#000" stroke-width="2" stroke-linecap="round"/><path d="M 53 74 C 55 74 55 74 55 74" stroke="#000" stroke-width="2" stroke-linecap="round"/>' :
+                        '<rect x="40" y="72" width="20" height="4" rx="2" fill="#000" /><rect x="42" y="73" width="6" height="2" rx="1" fill="#333" /><rect x="52" y="73" width="6" height="2" rx="1" fill="#333" /><text x="62" y="65" font-size="8" fill="#87ceeb">Z</text><text x="68" y="60" font-size="6" fill="#87ceeb">z</text><text x="72" y="56" font-size="4" fill="#87ceeb">z</text>'
+                    }
+                    <ellipse cx="50" cy="77" rx="2" ry="1" fill="#000" />
+                </svg>`,
+                
+                // Flying Bat (pose 1)
+                `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
+                    <ellipse cx="25" cy="45" rx="15" ry="8" fill="#4a4a4a" stroke="#333" stroke-width="2" transform="rotate(-20 25 45)" />
+                    <ellipse cx="75" cy="45" rx="15" ry="8" fill="#4a4a4a" stroke="#333" stroke-width="2" transform="rotate(20 75 45)" />
+                    <ellipse cx="50" cy="50" rx="8" ry="15" fill="#666" stroke="#333" stroke-width="2" />
+                    <circle cx="50" cy="35" r="10" fill="#666" stroke="#333" stroke-width="2" />
+                    <ellipse cx="46" cy="28" rx="3" ry="6" fill="#555" stroke="#333" stroke-width="1" />
+                    <ellipse cx="54" cy="28" rx="3" ry="6" fill="#555" stroke="#333" stroke-width="1" />
+                    ${!isRevealed ? 
+                        '<circle cx="46" cy="33" r="2" fill="#000" /><circle cx="54" cy="33" r="2" fill="#000" />' :
+                        '<rect x="42" y="31" width="16" height="4" rx="2" fill="#000" /><rect x="44" y="32" width="5" height="2" rx="1" fill="#333" /><rect x="51" y="32" width="5" height="2" rx="1" fill="#333" /><path d="M 46 38 Q 50 40 54 38" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round"/>'
+                    }
+                    <ellipse cx="50" cy="36" rx="1.5" ry="1" fill="#000" />
+                </svg>`,
+                
+                // Alert Bat (pose 2)
+                `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
+                    <rect x="25" y="80" width="50" height="6" fill="#4a3728" rx="3" />
+                    <ellipse cx="40" cy="80" rx="2" ry="3" fill="#333" />
+                    <ellipse cx="60" cy="80" rx="2" ry="3" fill="#333" />
+                    <ellipse cx="35" cy="55" rx="10" ry="12" fill="#4a4a4a" stroke="#333" stroke-width="2" transform="rotate(-15 35 55)" />
+                    <ellipse cx="65" cy="55" rx="10" ry="12" fill="#4a4a4a" stroke="#333" stroke-width="2" transform="rotate(15 65 55)" />
+                    <ellipse cx="50" cy="60" rx="8" ry="18" fill="#666" stroke="#333" stroke-width="2" />
+                    <circle cx="50" cy="35" r="12" fill="#666" stroke="#333" stroke-width="2" />
+                    <ellipse cx="45" cy="25" rx="3" ry="8" fill="#555" stroke="#333" stroke-width="1" />
+                    <ellipse cx="55" cy="25" rx="3" ry="8" fill="#555" stroke="#333" stroke-width="1" />
+                    ${!isRevealed ? 
+                        '<circle cx="46" cy="33" r="3" fill="#000" /><circle cx="54" cy="33" r="3" fill="#000" /><circle cx="46" cy="32" r="1" fill="#fff" /><circle cx="54" cy="32" r="1" fill="#fff" />' :
+                        '<rect x="38" y="31" width="24" height="4" rx="2" fill="#000" /><rect x="40" y="32" width="8" height="2" rx="1" fill="#333" /><rect x="52" y="32" width="8" height="2" rx="1" fill="#333" />'
+                    }
+                    <ellipse cx="50" cy="37" rx="2" ry="1" fill="#000" />
+                </svg>`,
+                
+                // Vampire Bat (pose 3)
+                `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
+                    <path d="M 20 50 Q 15 40 25 45 Q 35 35 45 50" fill="#1a1a1a" stroke="#000" stroke-width="2" />
+                    <path d="M 55 50 Q 65 35 75 45 Q 85 40 80 50" fill="#1a1a1a" stroke="#000" stroke-width="2" />
+                    <ellipse cx="50" cy="55" rx="10" ry="18" fill="#333" stroke="#000" stroke-width="2" />
+                    <path d="M 42 42 Q 50 38 58 42 Q 55 48 50 46 Q 45 48 42 42" fill="#8b0000" stroke="#000" stroke-width="1" />
+                    <circle cx="50" cy="35" r="12" fill="#666" stroke="#000" stroke-width="2" />
+                    <path d="M 43 28 L 40 20 L 46 26 Z" fill="#555" stroke="#000" stroke-width="1" />
+                    <path d="M 57 28 L 54 26 L 60 20 Z" fill="#555" stroke="#000" stroke-width="1" />
+                    ${!isRevealed ? 
+                        '<circle cx="46" cy="32" r="2.5" fill="#ff0000" /><circle cx="54" cy="32" r="2.5" fill="#ff0000" />' :
+                        '<rect x="38" y="30" width="24" height="4" rx="2" fill="#000" /><rect x="40" y="31" width="8" height="2" rx="1" fill="#333" /><rect x="52" y="31" width="8" height="2" rx="1" fill="#333" /><path d="M 45 39 Q 50 42 55 39" stroke="#8b0000" stroke-width="2" fill="none" stroke-linecap="round"/>'
+                    }
+                    <ellipse cx="50" cy="36" rx="2" ry="1" fill="#000" />
+                    <path d="M 47 37 L 47 41 L 48 37 Z" fill="#fff" />
+                    <path d="M 52 37 L 52 41 L 53 37 Z" fill="#fff" />
+                </svg>`
+            ];
             
-            // Simplified bat based on pose
-            if (pose === 0) { // Sleeping
-                // Branch
-                const branch = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                branch.setAttribute('x', '20');
-                branch.setAttribute('y', '15');
-                branch.setAttribute('width', '60');
-                branch.setAttribute('height', '6');
-                branch.setAttribute('fill', '#4a3728');
-                branch.setAttribute('rx', '3');
-                svg.appendChild(branch);
-                
-                // Body
-                const body = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
-                body.setAttribute('cx', '50');
-                body.setAttribute('cy', '55');
-                body.setAttribute('rx', '18');
-                body.setAttribute('ry', '25');
-                body.setAttribute('fill', '#4a4a4a');
-                body.setAttribute('stroke', '#333');
-                body.setAttribute('stroke-width', '2');
-                svg.appendChild(body);
-                
-                // Head
-                const head = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                head.setAttribute('cx', '50');
-                head.setAttribute('cy', '75');
-                head.setAttribute('r', '12');
-                head.setAttribute('fill', '#666');
-                head.setAttribute('stroke', '#333');
-                head.setAttribute('stroke-width', '2');
-                svg.appendChild(head);
-                
-                if (isRevealed) {
-                    // Sunglasses
-                    const glasses = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                    glasses.setAttribute('x', '40');
-                    glasses.setAttribute('y', '72');
-                    glasses.setAttribute('width', '20');
-                    glasses.setAttribute('height', '4');
-                    glasses.setAttribute('rx', '2');
-                    glasses.setAttribute('fill', '#000');
-                    svg.appendChild(glasses);
-                }
-            }
-            
-            return svg;
+            return poses[pose];
         }
 
+        // Sound effects
         async function playSound(type) {
             await Tone.start();
             
@@ -225,33 +449,53 @@
                 setTimeout(() => synth.triggerAttackRelease("B4", "2n"), 300);
                 setTimeout(() => synth.triggerAttackRelease("D5", "1n"), 600);
                 setTimeout(() => synth.dispose(), 2000);
+            } else if (type === 'click') {
+                const synth = new Tone.Synth({
+                    oscillator: { type: "sine" },
+                    envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 }
+                }).toDestination();
+                synth.triggerAttackRelease("C5", "32n");
+                setTimeout(() => synth.dispose(), 200);
             } else if (type === 'found') {
                 const synth = new Tone.PolySynth().toDestination();
                 synth.triggerAttackRelease(["E4", "G#4", "B4", "E5"], "4n");
+                
+                setTimeout(() => {
+                    const sparkleSynth = new Tone.Synth({
+                        oscillator: { type: "sine" },
+                        envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.2 }
+                    }).toDestination();
+                    sparkleSynth.volume.value = -10;
+                    sparkleSynth.triggerAttackRelease("G5", "16n");
+                    setTimeout(() => sparkleSynth.triggerAttackRelease("B5", "16n"), 100);
+                    setTimeout(() => sparkleSynth.triggerAttackRelease("D6", "16n"), 200);
+                    setTimeout(() => sparkleSynth.dispose(), 500);
+                }, 100);
+                
                 setTimeout(() => synth.dispose(), 1000);
             }
         }
 
+        // Game functions
         function startGame() {
-            gameState.started = true;
-            gameState.batFound = false;
             gameState.batPosition.x = Math.random() * 70 + 15;
             gameState.batPosition.y = Math.random() * 60 + 20;
             gameState.currentPose = Math.floor(Math.random() * 4);
             gameState.moonPhase = Math.floor(Math.random() * 8);
+            gameState.started = true;
+            gameState.batFound = false;
             
-            document.getElementById('start-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
             
-            createMoon(gameState.moonPhase);
+            // Set up moon
+            document.getElementById('moon').innerHTML = createMoonPhase(gameState.moonPhase);
             
-            // Create bat
-            const batContainer = document.getElementById('bat-container');
-            batContainer.innerHTML = '';
-            batContainer.appendChild(createBat(gameState.currentPose));
+            // Set up bat
+            const batContainer = document.getElementById('batContainer');
+            batContainer.innerHTML = createBatSVG(false, gameState.currentPose);
             batContainer.style.left = gameState.batPosition.x + '%';
             batContainer.style.top = gameState.batPosition.y + '%';
-            batContainer.style.transform = 'translate(-50%, -50%)';
             
             playSound('start');
         }
@@ -260,71 +504,85 @@
             gameState.started = false;
             gameState.batFound = false;
             
-            document.getElementById('victory-screen').classList.add('hidden');
-            document.getElementById('start-screen').classList.remove('hidden');
-            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
         }
 
-        function checkBatClick(e) {
-            if (gameState.batFound) return;
-            
-            const rect = document.getElementById('game-container').getBoundingClientRect();
-            const clickX = ((e.clientX - rect.left) / rect.width) * 100;
-            const clickY = ((e.clientY - rect.top) / rect.height) * 100;
-            
-            const distance = Math.sqrt(
-                Math.pow(clickX - gameState.batPosition.x, 2) + 
-                Math.pow(clickY - gameState.batPosition.y, 2)
-            );
-            
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-            const flashlightDistance = Math.sqrt(
-                Math.pow(mouseX - gameState.mousePos.x, 2) + 
-                Math.pow(mouseY - gameState.mousePos.y, 2)
-            );
-            
-            if (flashlightDistance < 60 && distance < 12) {
-                gameState.batFound = true;
+        function getMoonPhaseName(phase) {
+            const names = ["New Moon", "Waxing Crescent", "First Quarter", "Waxing Gibbous", 
+                           "Full Moon", "Waning Gibbous", "Last Quarter", "Waning Crescent"];
+            return names[phase];
+        }
+
+        function checkBatClick(event) {
+            if (!gameState.batFound) {
+                const rect = document.getElementById('gameContainer').getBoundingClientRect();
+                const clickX = ((event.clientX - rect.left) / rect.width) * 100;
+                const clickY = ((event.clientY - rect.top) / rect.height) * 100;
                 
-                document.getElementById('game-screen').classList.add('hidden');
-                document.getElementById('victory-screen').classList.remove('hidden');
+                const distance = Math.sqrt(
+                    Math.pow(clickX - gameState.batPosition.x, 2) + 
+                    Math.pow(clickY - gameState.batPosition.y, 2)
+                );
                 
-                // Show victory bat
-                const victoryBat = document.getElementById('victory-bat');
-                victoryBat.innerHTML = '';
-                victoryBat.appendChild(createBat(gameState.currentPose, true));
+                const mouseX = event.clientX - rect.left;
+                const mouseY = event.clientY - rect.top;
+                const flashlightDistance = Math.sqrt(
+                    Math.pow(mouseX - gameState.mousePos.x, 2) + 
+                    Math.pow(mouseY - gameState.mousePos.y, 2)
+                );
                 
-                document.getElementById('victory-text').textContent = victoryMessages[gameState.currentPose];
-                document.getElementById('moon-text').textContent = `Found under the ${moonPhaseNames[gameState.moonPhase]}!`;
-                
-                playSound('found');
+                if (flashlightDistance < 60 && distance < 12) {
+                    gameState.batFound = true;
+                    
+                    // Show result screen
+                    document.getElementById('gameScreen').classList.add('hidden');
+                    document.getElementById('resultScreen').classList.remove('hidden');
+                    
+                    // Set up result
+                    const resultTexts = [
+                        "💤 SLEEPY BAT! 💤",
+                        "🦇 FLYING HIGH! 🦇", 
+                        "👁️ WIDE AWAKE! 👁️",
+                        "🧛 SPOOKY BAT! 🧛"
+                    ];
+                    
+                    document.getElementById('resultBat').innerHTML = createBatSVG(true, gameState.currentPose);
+                    document.getElementById('resultText').textContent = resultTexts[gameState.currentPose];
+                    document.getElementById('moonPhaseText').textContent = `Found under the ${getMoonPhaseName(gameState.moonPhase)}!`;
+                    
+                    playSound('found');
+                } else {
+                    playSound('click');
+                }
             }
         }
 
-        // Event listeners
-        document.addEventListener('mousemove', (e) => {
-            if (!gameState.started || gameState.batFound) return;
-            
-            const rect = document.getElementById('game-container').getBoundingClientRect();
-            gameState.mousePos.x = e.clientX - rect.left;
-            gameState.mousePos.y = e.clientY - rect.top;
-            
-            // Update flashlight
-            const flashlightArea = document.getElementById('flashlight-area');
-            flashlightArea.style.webkitMaskImage = `radial-gradient(circle 60px at ${gameState.mousePos.x}px ${gameState.mousePos.y}px, white 0%, white 100%, transparent 100%)`;
-            flashlightArea.style.maskImage = `radial-gradient(circle 60px at ${gameState.mousePos.x}px ${gameState.mousePos.y}px, white 0%, white 100%, transparent 100%)`;
-            flashlightArea.style.background = 'linear-gradient(to bottom, #60a5fa, #34d399)';
-            
-            const flashlightCircle = document.getElementById('flashlight-circle');
-            flashlightCircle.style.left = (gameState.mousePos.x - 64) + 'px';
-            flashlightCircle.style.top = (gameState.mousePos.y - 64) + 'px';
+        // Mouse tracking
+        document.addEventListener('mousemove', (event) => {
+            if (gameState.started && !gameState.batFound) {
+                const rect = document.getElementById('gameContainer').getBoundingClientRect();
+                gameState.mousePos.x = event.clientX - rect.left;
+                gameState.mousePos.y = event.clientY - rect.top;
+                
+                const illuminatedScene = document.getElementById('illuminatedScene');
+                const flashlightIndicator = document.getElementById('flashlightIndicator');
+                
+                // Update mask position
+                illuminatedScene.style.webkitMaskImage = `radial-gradient(circle 60px at ${gameState.mousePos.x}px ${gameState.mousePos.y}px, white 0%, white 100%, transparent 100%)`;
+                illuminatedScene.style.maskImage = `radial-gradient(circle 60px at ${gameState.mousePos.x}px ${gameState.mousePos.y}px, white 0%, white 100%, transparent 100%)`;
+                
+                // Update flashlight indicator position
+                flashlightIndicator.style.left = (gameState.mousePos.x - 64) + 'px';
+                flashlightIndicator.style.top = (gameState.mousePos.y - 64) + 'px';
+            }
         });
 
-        document.getElementById('game-screen').addEventListener('click', checkBatClick);
+        // Click handler
+        document.getElementById('gameScreen').addEventListener('click', checkBatClick);
 
-        // Initialize
-        createStars();
+        // Initialize the game
+        initBackground();
     </script>
 </body>
 </html>
