@@ -1,2 +1,3 @@
-# dozingbats
-playful hide and seek game
+# Dozing Bats
+
+A playful hide and seek game
