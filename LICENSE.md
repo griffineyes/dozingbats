@@ -426,4 +426,4 @@ public licenses.
   
 Creative Commons may be contacted at creativecommons.org.  
   
-<a href="https://dozingbats.com">Dozing Bats</a> © 2025 by <a href="https://github.com/griffineyes">Richard J. Ashe</a> is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a><img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">  
+<a href="https://dozingbats.com">Dozing Bats</a> © 2025 by <a href="https://github.com/griffineyes">Richard J. Ashe</a> is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>   <a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">
