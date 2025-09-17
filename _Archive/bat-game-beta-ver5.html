@@ -229,61 +229,6 @@
     <div class="game-container" id="gameContainer">
         <!-- Night Background -->
         <div class="night-background" id="nightBackground">
-            <!-- Dark forest landscape silhouettes -->
-            <svg class="forest-landscape" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 70%; z-index: 1;" viewBox="0 0 1000 350" preserveAspectRatio="none">
-                <!-- Background mountain silhouettes -->
-                <polygon points="0,200 100,150 200,180 300,120 400,160 500,100 600,140 700,110 800,150 900,130 1000,170 1000,350 0,350" fill="#0a0a1a" opacity="0.8" />
-                
-                <!-- Distant forest layer -->
-                <polygon points="0,250 50,220 100,240 150,210 200,230 250,200 300,220 350,190 400,210 450,180 500,200 550,170 600,190 650,160 700,180 750,150 800,170 850,140 900,160 950,130 1000,150 1000,350 0,350" fill="#0f0f2a" opacity="0.9" />
-                
-                <!-- Mid forest layer with varied tree shapes -->
-                <polygon points="0,280 30,260 50,270 80,250 120,265 140,245 180,260 200,240 240,255 270,235 300,250 330,230 370,245 400,225 440,240 470,220 510,235 540,215 580,230 610,210 650,225 680,205 720,220 750,200 790,215 820,195 860,210 890,190 930,205 970,185 1000,200 1000,350 0,350" fill="#1a1a3a" />
-                
-                <!-- Foreground forest with individual tree silhouettes -->
-                <!-- Large oak trees -->
-                <ellipse cx="80" cy="270" rx="45" ry="60" fill="#0a0a1a" />
-                <ellipse cx="80" cy="250" rx="35" ry="45" fill="#0a0a1a" />
-                <rect x="75" y="270" width="10" height="80" fill="#000" />
-                
-                <ellipse cx="300" cy="280" rx="55" ry="70" fill="#0a0a1a" />
-                <ellipse cx="300" cy="255" rx="40" ry="50" fill="#0a0a1a" />
-                <rect x="295" y="280" width="12" height="70" fill="#000" />
-                
-                <!-- Tall pine trees -->
-                <polygon points="150,200 130,300 170,300" fill="#0a0a1a" />
-                <polygon points="150,220 135,280 165,280" fill="#0a0a1a" />
-                <polygon points="150,240 140,260 160,260" fill="#0a0a1a" />
-                
-                <polygon points="450,180 430,280 470,280" fill="#0a0a1a" />
-                <polygon points="450,200 435,260 465,260" fill="#0a0a1a" />
-                <polygon points="450,220 440,240 460,240" fill="#0a0a1a" />
-                
-                <polygon points="750,190 730,290 770,290" fill="#0a0a1a" />
-                <polygon points="750,210 735,270 765,270" fill="#0a0a1a" />
-                <polygon points="750,230 740,250 760,250" fill="#0a0a1a" />
-                
-                <!-- Twisted dead trees -->
-                <path d="M 600 300 Q 590 280 600 260 Q 610 240 595 220 Q 585 200 600 180" stroke="#000" stroke-width="8" fill="none" />
-                <path d="M 595 240 Q 580 235 575 225" stroke="#000" stroke-width="4" fill="none" />
-                <path d="M 605 220 Q 620 215 625 205" stroke="#000" stroke-width="4" fill="none" />
-                
-                <path d="M 850 320 Q 840 300 850 280 Q 860 260 845 240 Q 835 220 850 200 Q 860 180 845 160" stroke="#000" stroke-width="10" fill="none" />
-                <path d="M 845 260 Q 830 255 825 245" stroke="#000" stroke-width="5" fill="none" />
-                <path d="M 855 240 Q 870 235 875 225" stroke="#000" stroke-width="5" fill="none" />
-                <path d="M 850 200 Q 865 195 870 185" stroke="#000" stroke-width="4" fill="none" />
-                
-                <!-- Smaller scattered trees and bushes -->
-                <ellipse cx="200" cy="310" rx="25" ry="30" fill="#0a0a1a" />
-                <ellipse cx="380" cy="320" rx="20" ry="25" fill="#0a0a1a" />
-                <ellipse cx="520" cy="315" rx="30" ry="35" fill="#0a0a1a" />
-                <ellipse cx="680" cy="325" rx="22" ry="28" fill="#0a0a1a" />
-                <ellipse cx="920" cy="310" rx="28" ry="32" fill="#0a0a1a" />
-                
-                <!-- Ground with slight hills -->
-                <polygon points="0,330 100,325 200,335 300,320 400,330 500,315 600,325 700,310 800,320 900,305 1000,315 1000,350 0,350" fill="#0a0a1a" />
-            </svg>
-            
             <!-- Static castle in night background -->
             <svg class="night-castle" style="position: absolute; bottom: 0; left: 35%; width: 400px; height: 240px; z-index: 2;" viewBox="0 0 400 240">
                 <!-- Castle base -->
@@ -572,17 +517,6 @@
                 castleFirefly.style.animationDelay = Math.random() * 3 + 's';
                 castleFirefly.style.animationDuration = (2.5 + Math.random() * 2) + 's';
                 background.appendChild(castleFirefly);
-            }
-            
-            // Add fireflies dancing around the forest
-            for (let i = 0; i < 6; i++) {
-                const forestFirefly = document.createElement('div');
-                forestFirefly.className = 'firefly';
-                forestFirefly.style.left = Math.random() * 100 + '%';
-                forestFirefly.style.top = (70 + Math.random() * 25) + '%';
-                forestFirefly.style.animationDelay = Math.random() * 4 + 's';
-                forestFirefly.style.animationDuration = (3 + Math.random() * 3) + 's';
-                background.appendChild(forestFirefly);
             }
         }
 
