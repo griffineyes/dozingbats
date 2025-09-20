@@ -4,7 +4,7 @@ A playful hide and seek game created with Claude.
 
 ## Tools  
 
-GitHub, Claude, Adobe, GIMP, W3C Html Validator, and more  
+GitHub, Claude, Adobe, GIMP, W3C HTML Validator, and more  
   
 ## Road Map. 
   
